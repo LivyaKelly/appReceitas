@@ -1,7 +1,7 @@
 import { View, FlatList, Text, TouchableOpacity, Alert } from 'react-native';
 import { useEffect, useState } from 'react';
+import { getFavorites, Recipe, removeFavorite } from '../utils/api';
 import RecipeCard from '../components/recipeCard';
-import { getFavorites, Recipe, removeFavorite } from '../api';
 
 
 export default function FavoritesScreen() {

@@ -1,58 +1,142 @@
-import { SafeAreaView, FlatList, ActivityIndicator, Text, View, TouchableOpacity } from 'react-native';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
+// app/index.tsx
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
 import RecipeCard from '../components/recipeCard';
-import { getRecipes, Recipe, addFavorite } from '../api';
-
+import { getRecipesApi, Recipe, addFavorite, getRecipes } from '../utils/api';
 
 export default function HomeScreen() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const fetchRecipes = async () => {
+    try {
+      const apiRecipes = await getRecipesApi();
+      setRecipes(apiRecipes);
+    } catch (error) {
+      console.error("Erro ao buscar receitas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     async function fetchRecipes() {
-      const data = await getRecipes();
-      setRecipes(data);
-      setLoading(false);
+      try {
+        const apiRecipes = await getRecipesApi();
+        const localRecipes = await getRecipes(); // Recupera as receitas salvas localmente
+        const combinedRecipes = [...apiRecipes, ...localRecipes];
+        setRecipes(combinedRecipes);
+      } catch (error) {
+        console.error("Erro ao buscar receitas:", error);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchRecipes();
   }, []);
 
-  const handleAddFavorite = async (recipe: Recipe) => {
-    await addFavorite(recipe);
-    alert('Receita adicionada aos favoritos!');
-  };
+  // Agrupa receitas por categoria (tipo). Se não houver, agrupa em "OUTROS"
+  const groupedRecipes = recipes.reduce((acc: Record<string, Recipe[]>, recipe) => {
+    const category = recipe.tipo ? recipe.tipo.toUpperCase() : 'OUTROS';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(recipe);
+    return acc;
+  }, {});
 
   if (loading) {
     return (
-      <ActivityIndicator
-        size="large"
-        color="#0000ff"
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-      />
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FF3D00" />
+      </SafeAreaView>
     );
   }
 
-
   return (
-    <SafeAreaView style={{ flex: 1, padding: 16, backgroundColor: '#f3f3f3' }}>
-      <FlatList
-        data={recipes}
-        keyExtractor={(item, index) => item.id || index.toString()}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 10 }}>
-            <RecipeCard recipe={item} onPress={() => {}} />
-            <TouchableOpacity
-              onPress={() => handleAddFavorite(item)}
-              style={{ backgroundColor: '#4CAF50', padding: 8, borderRadius: 5, marginTop: 5 }}
-            >
-              <Text style={{ color: '#fff', textAlign: 'center' }}>Adicionar aos Favoritos</Text>
-            </TouchableOpacity>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        {/* Exibe o total de receitas */}
+        <Text style={styles.totalText}>Total de receitas: {recipes.length}</Text>
+        {Object.keys(groupedRecipes).map((category) => (
+          <View key={category} style={styles.categoryContainer}>
+            <Text style={styles.categoryTitle}>{category}</Text>
+            <FlatList
+              data={groupedRecipes[category]}
+              horizontal
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.cardContainer}
+                  onPress={() =>
+                    router.push({ pathname: '/recipe/[id]', params: { id: item.id } })
+                  }
+                >
+                  <RecipeCard
+                    recipe={item}
+                  />
+                </TouchableOpacity>
+              )}
+              showsHorizontalScrollIndicator={false}
+            />
           </View>
-        )}
-      />
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
-
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F3F3F3',
+  },
+  scrollView: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#333',
+    textAlign: 'center',
+  },
+  categoryContainer: {
+    marginBottom: 24,
+  },
+  categoryTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 12,
+  },
+  cardContainer: {
+    marginRight: 16,
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: '#FFF',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F3F3F3',
+  },
+});
