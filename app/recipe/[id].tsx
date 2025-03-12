@@ -185,22 +185,31 @@ export default function RecipeDetails() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <Image source={{ uri: recipe.imageUrl }} style={styles.image} />
+        <Image source={{ uri: imageUrl }} style={styles.image} />
         <TouchableOpacity onPress={handleFavoriteToggle} style={styles.favoriteButton}>
           <FontAwesome name={isFavorite ? "star" : "star-o"} size={30} color="#FFD700" />
         </TouchableOpacity>
         <View style={styles.detailContainer}>
-          <Text style={styles.title}>{recipe.name}</Text>
-          <Text style={styles.instructions}>{recipe.instructions}</Text>
-        </View>
-        <View style={styles.buttonRow}>
-          {isLocal ? (
+          {isEditing ? (
             <>
-              <Button title="Editar" onPress={() => setIsEditing(true)} />
-              <Button title="Deletar" onPress={handleDelete} color="red" />
+              <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Nome da Receita" />
+              <TextInput style={[styles.input, { height: 100 }]} value={instructions} onChangeText={setInstructions} multiline placeholder="Modo de Preparo" />
+              <Button title="Salvar" onPress={handleSave} />
+              <Button title="Cancelar" onPress={() => setIsEditing(false)} color="gray" />
             </>
           ) : (
-            <Text style={{ color: 'red', fontSize: 14 }}>Esta receita não pode ser deletada.</Text>
+            <>
+              <Text style={styles.title}>{recipe.name}</Text>
+              <Text style={styles.instructions}>{recipe.instructions}</Text>
+            </>
+          )}
+        </View>
+        <View style={styles.buttonRow}>
+          {isLocal && !isEditing && (
+            <Button title="Editar" onPress={() => setIsEditing(true)} />
+          )}
+          {isLocal && (
+            <Button title="Deletar" onPress={handleDelete} color="red" />
           )}
         </View>
       </ScrollView>
@@ -210,12 +219,13 @@ export default function RecipeDetails() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F3F3F3' },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F3F3F3' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   notFoundText: { fontSize: 18, textAlign: 'center', marginTop: 20 },
   image: { width: '100%', height: 250 },
   detailContainer: { padding: 16 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, color: '#333' },
-  instructions: { fontSize: 16, color: '#555' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
+  instructions: { fontSize: 16 },
+  input: { backgroundColor: 'white', padding: 10, marginBottom: 10, borderRadius: 5 },
   favoriteButton: { position: 'absolute', top: 20, right: 20 },
   buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, paddingHorizontal: 16 },
 });
