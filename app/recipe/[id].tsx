@@ -35,25 +35,30 @@ export default function RecipeDetails() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isLocal, setIsLocal] = useState(false);
 
-  // Campos de edição
+  // Campos para edição
   const [name, setName] = useState('');
   const [instructions, setInstructions] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [pickedImage, setPickedImage] = useState<string | null>(null);
-  const [isLocal, setIsLocal] = useState(false);
 
   useEffect(() => {
     async function fetchRecipe() {
       console.log("ID recebido:", id);
+      
+      // Primeiro, tenta buscar a receita localmente
       const localData = await getLocalRecipeById(id);
+      
       if (localData) {
         console.log("Receita local encontrada:", localData);
         setRecipe(localData);
         setIsLocal(true);
       } else {
+        // Se não for local, busca na API
         const apiData = await getRecipeById(id);
         console.log("Receita da API:", apiData);
+        
         if (apiData) {
           setRecipe(apiData);
           setIsLocal(false);
@@ -62,9 +67,13 @@ export default function RecipeDetails() {
           setRecipe(null);
         }
       }
+      
+      // Verifica se a receita está nos favoritos
       checkIfFavorite(id);
+      
       setLoading(false);
     }
+
     fetchRecipe();
   }, [id]);
 
@@ -184,6 +193,16 @@ export default function RecipeDetails() {
           <Text style={styles.title}>{recipe.name}</Text>
           <Text style={styles.instructions}>{recipe.instructions}</Text>
         </View>
+        <View style={styles.buttonRow}>
+          {isLocal ? (
+            <>
+              <Button title="Editar" onPress={() => setIsEditing(true)} />
+              <Button title="Deletar" onPress={handleDelete} color="red" />
+            </>
+          ) : (
+            <Text style={{ color: 'red', fontSize: 14 }}>Esta receita não pode ser deletada.</Text>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -198,4 +217,5 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, color: '#333' },
   instructions: { fontSize: 16, color: '#555' },
   favoriteButton: { position: 'absolute', top: 20, right: 20 },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, paddingHorizontal: 16 },
 });
