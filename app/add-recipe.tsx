@@ -73,9 +73,10 @@ export default function AddRecipeScreen() {
         placeholder="Nome da Receita"
         value={name}
         onChangeText={setName}
+
       />
       <TextInput
-        style={[styles.input, styles.multilineInput]}
+        style={[styles.input, styles.multilineInput,]}
         placeholder="Instruções"
         value={instructions}
         onChangeText={setInstructions}
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f3f3',
   },
   title: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
@@ -112,6 +113,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
     backgroundColor: '#fff',
+    
   },
   multilineInput: {
     height: 100,

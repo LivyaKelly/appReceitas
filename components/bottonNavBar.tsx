@@ -13,12 +13,12 @@ export default function BottomNavBar() {
       justifyContent: 'space-around',
       alignItems: 'center',
       backgroundColor: '#f3f3f3',
-      marginBottom: 15,
       paddingVertical: 15,
       borderTopWidth: 1,
       borderColor: '#ccc',
       bottom: 0,
       width: '100%',
+      height: '10%',
     }}>
       <TouchableOpacity onPress={() => router.push('/')} style={{ alignItems: 'center' }}>
         <FontAwesome5 name="home" size={24} color="black" />
