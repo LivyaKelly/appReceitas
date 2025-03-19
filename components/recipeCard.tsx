@@ -26,7 +26,7 @@ export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    width: 150,
+    width: 200,
     backgroundColor: '#FFF',
     borderRadius: 10,
     overflow: 'hidden',

@@ -67,7 +67,6 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        {/* Exibe o total de receitas */}
         <Text style={styles.totalText}>Total de receitas: {recipes.length}</Text>
         {Object.keys(groupedRecipes).map((category) => (
           <View key={category} style={styles.categoryContainer}>
@@ -103,8 +102,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F3F3',
   },
   scrollView: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: 10,
+
   },
   totalText: {
     fontSize: 18,
@@ -124,6 +123,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     marginRight: 16,
+    marginBottom: 20,
     borderRadius: 10,
     overflow: 'hidden',
     backgroundColor: '#FFF',

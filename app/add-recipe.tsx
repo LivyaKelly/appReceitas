@@ -47,14 +47,13 @@ export default function AddRecipeScreen() {
       name,
       instructions,
       imageUrl: imageUrl || 'https://via.placeholder.com/150',
-      tipo: "", // Campo 'tipo' não é solicitado no cadastro
+      tipo: "",
     };
 
     try {
       await saveRecipe(newRecipe);
       console.log("Receita cadastrada:", newRecipe);
       Alert.alert("Sucesso", "Receita cadastrada com sucesso!");
-      // Limpa os campos
       setName('');
       setInstructions('');
       setImageUrl('');
@@ -97,6 +96,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    marginTop: 80,
     backgroundColor: '#f3f3f3',
   },
   title: {

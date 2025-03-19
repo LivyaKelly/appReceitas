@@ -34,16 +34,19 @@ export default function FavoritesScreen() {
 
 
   return (
-    <View style={{ flex: 1, padding: 16, backgroundColor: '#f3f3f3' }}>
+    <View style={{ flex: 1, padding: 16, backgroundColor: '#f3f3f3',}}>
+      <View>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', marginTop: 40, }}>Favoritos</Text>
+      </View>
       <FlatList
         data={favorites}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={{ marginBottom: 10 }}>
+          <View style={{ marginTop: 40, alignItems: 'center' }}>
             <RecipeCard recipe={item} onPress={() => {}} />
             <TouchableOpacity
               onPress={() => handleDelete(item.id)}
-              style={{ backgroundColor: 'red', padding: 8, borderRadius: 5, marginTop: 5 }}
+              style={{ backgroundColor: 'red', padding: 8, borderRadius: 5, marginTop: 5, width: 200 }}
             >
               <Text style={{ color: '#fff', textAlign: 'center' }}>Remover dos Favoritos</Text>
             </TouchableOpacity>

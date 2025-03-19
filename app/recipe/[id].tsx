@@ -1,4 +1,3 @@
-// app/recipe/[id].tsx
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -26,18 +25,14 @@ import {
   getFavorites,
   removeFavorite,
 } from '../../utils/api';
-
 export default function RecipeDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLocal, setIsLocal] = useState(false);
-
-  // Campos para edição
   const [name, setName] = useState('');
   const [instructions, setInstructions] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -46,19 +41,14 @@ export default function RecipeDetails() {
   useEffect(() => {
     async function fetchRecipe() {
       console.log("ID recebido:", id);
-      
-      // Primeiro, tenta buscar a receita localmente
       const localData = await getLocalRecipeById(id);
-      
       if (localData) {
         console.log("Receita local encontrada:", localData);
         setRecipe(localData);
         setIsLocal(true);
       } else {
-        // Se não for local, busca na API
         const apiData = await getRecipeById(id);
         console.log("Receita da API:", apiData);
-        
         if (apiData) {
           setRecipe(apiData);
           setIsLocal(false);
@@ -67,10 +57,8 @@ export default function RecipeDetails() {
           setRecipe(null);
         }
       }
-      
-      // Verifica se a receita está nos favoritos
       checkIfFavorite(id);
-      
+
       setLoading(false);
     }
 
